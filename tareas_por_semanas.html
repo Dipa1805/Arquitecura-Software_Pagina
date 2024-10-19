@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semanas</title>  
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <header>
+    <h1><i class="fas fa-ttasks"></i> Semanas</h1>
+    <h2>Diego Estefano Parodi Tardio</h2>
+    <nav>
+      <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Volver a la página principal</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <div id="tareas-container"></div>
+  </main>
+  <footer>
+    <p>&copy; 2024 Arquitectura de Software</p>
+  </footer>
+
+  <script>
+    const tareasData = [
+      {
+        semana: 1,
+        tareas: [
+          { 
+            id: 1, 
+            descripcion: 'Proyecto 01', 
+            enunciado: 'Implementar un proyecto que guarde la información del estudiante (Código, nombre, fecha de nacimiento, dirección y teléfono).',
+            githubUrl: 'https://github.com/Dipa1805/Arquitectura-Software/tree/main/Semana1' 
+          },          
+        ]
+      },
+      {
+        semana: 2,
+        tareas: [
+          { 
+            id: 2, 
+            descripcion: 'Proyecto 02', 
+            enunciado: 'Implementar un proyecto que guarde la información del estudiante (Código, nombre, fecha de nacimiento, dirección y teléfono) en MODELO-VISTA-CONTROLADOR.',
+            githubUrl: 'https://github.com/Dipa1805/Arquitectura-Software/tree/main/Semana2'
+          },
+        ]
+      },
+      {
+        semana: 3,
+        tareas: [
+          { 
+            id: 3, 
+            descripcion: 'Proyecto 03', 
+            enunciado: 'Elabora una aplicación utilizando Java, NetBeans, arquitectura MVC, POO, y Maven. El proyecto debe gestionar la venta de productos en una tienda de artefactos electrónicos, tanto al contado como a crédito.',
+            githubUrl: 'https://github.com/Dipa1805/Arquitectura-Software/tree/main/Semana3' 
+          },
+        ]
+      },
+      {
+        semana: 4,
+        tareas: [
+          { 
+            id: 4, 
+            descripcion: 'Proyecto 04', 
+            enunciado: 'Serialización con conexión a un archivo txt utilizando Java y Maven.',
+            githubUrl: 'https://github.com/Dipa1805/Arquitectura-Software/tree/main/Semana4'
+          },
+        ]
+      },
+      {
+        semana: 5,
+        tareas: [
+          { 
+            id: 5, 
+            descripcion: 'Proyecto 05', 
+            enunciado: 'Conexión de la base de datos de SQL Server junto con el Proyecto 03.',
+            githubUrl: 'https://github.com/Dipa1805/Arquitectura-Software/tree/main/Semana5'
+          },
+        ]
+      },
+      {
+        semana: 6,  <!-- Corregido de EXAMEN a semana 6 -->
+        tareas: [
+          { 
+            id: 6, 
+            descripcion: 'EXAMEN PARCIAL', 
+            enunciado: 'Examen parcial de arquitectura de software.',
+            githubUrl: ''   
+          },
+        ]
+      },
+    ];
+
+    function generarTareas() {
+      const container = document.getElementById('tareas-container');
+      tareasData.forEach(semana => {
+        const semanaElement = document.createElement('div');
+        semanaElement.className = 'semana card';
+        semanaElement.innerHTML = `
+          <div class="semana-titulo">
+            <span>Semana ${semana.semana}</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="tareas">
+            ${semana.tareas.map(tarea => `
+              <div class="tarea">
+                <input type="checkbox" id="tarea-${tarea.id}">
+                <div class="tarea-contenido">
+                  <label for="tarea-${tarea.id}">${tarea.descripcion}</label>
+                  <p>${tarea.enunciado}</p>
+                  ${tarea.githubUrl ? `<button class="btn-ver-github" onclick="verEnGitHub('${tarea.githubUrl}')">Ver en GitHub</button>` : ''}
+                </div>
+              </div>
+              <div id="contenido-${tarea.id}" style="display:none;"></div>
+            `).join('')}
+            <div class="progreso-semana">
+              <div class="progreso-barra" style="width: 0%"></div>
+            </div>
+          </div>
+        `;
+        container.appendChild(semanaElement);
+      });
+      const titulos = document.querySelectorAll('.semana-titulo');
+      titulos.forEach(titulo => {
+        titulo.addEventListener('click', () => {
+          const tareas = titulo.nextElementSibling;
+          const icono = titulo.querySelector('i');
+          if (tareas.style.display === 'block') {
+            tareas.style.display = 'none';
+            icono.className = 'fas fa-chevron-down';
+          } else {
+            tareas.style.display = 'block';
+            icono.className = 'fas fa-chevron-up';
+          }
+        });
+      });
+      const checkboxes = document.querySelectorAll('.tarea input[type="checkbox"]');
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+          const tarea = e.target.closest('.tarea');
+          const semana = e.target.closest('.semana');
+          if (e.target.checked) {
+            tarea.classList.add('tarea-completada');
+          } else {
+            tarea.classList.remove('tarea-completada');
+          }
+          actualizarProgreso(semana);
+        });
+      });
+    }
+
+    function actualizarProgreso(semana) {
+      const totalTareas = semana.querySelectorAll('.tarea').length;
+      const tareasCompletadas = semana.querySelectorAll('.tarea-completada').length;
+      const porcentaje = (tareasCompletadas / totalTareas) * 100;
+      const barra = semana.querySelector('.progreso-barra');
+      barra.style.width = `${porcentaje}%`;
+    }
+
+    function verEnGitHub(url) {
+      window.open(url, '_blank');
+    }
+
+    window.addEventListener('load', generarTareas);
+  </script>
+</body>
+</html>
